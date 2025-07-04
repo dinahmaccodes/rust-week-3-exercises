@@ -247,19 +247,19 @@ impl BitcoinTransaction {
     pub fn to_bytes(&self) -> Vec<u8> {
         let mut bytes = Vec::new();
 
-        // Version
+        // For Version
         bytes.extend_from_slice(&self.version.to_le_bytes());
 
-        // Number of inputs
+        // For Number of inputs
         let input_count = CompactSize::new(self.inputs.len() as u64);
         bytes.extend_from_slice(&input_count.to_bytes());
 
-        // Inputs
+        // ForInputs
         for input in &self.inputs {
             bytes.extend_from_slice(&input.to_bytes());
         }
 
-        // Lock time
+        // For Lock time
         bytes.extend_from_slice(&self.lock_time.to_le_bytes());
 
         bytes
@@ -268,18 +268,18 @@ impl BitcoinTransaction {
     pub fn from_bytes(bytes: &[u8]) -> Result<(Self, usize), BitcoinError> {
         let mut offset = 0;
 
-        // Parse version
+        // For Parse version
         if bytes.len() < 4 {
             return Err(BitcoinError::InsufficientBytes);
         }
         let version = u32::from_le_bytes([bytes[0], bytes[1], bytes[2], bytes[3]]);
         offset += 4;
 
-        // Parse input count
+        // For Parse input count
         let (input_count, count_consumed) = CompactSize::from_bytes(&bytes[offset..])?;
         offset += count_consumed;
 
-        // Parse inputs
+        // For Parse inputs
         let mut inputs = Vec::new();
         for _ in 0..input_count.value {
             let (input, input_consumed) = TransactionInput::from_bytes(&bytes[offset..])?;
@@ -287,7 +287,7 @@ impl BitcoinTransaction {
             offset += input_consumed;
         }
 
-        // Parse lock time
+        // For Parse lock time
         if bytes.len() < offset + 4 {
             return Err(BitcoinError::InsufficientBytes);
         }
